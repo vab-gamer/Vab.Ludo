@@ -1,0 +1,143 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d1b69 50%, #FFD700 100%);
+    min-height: 100vh;
+    color: #000;
+}
+
+.container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+/* Header */
+.game-header {
+    text-align: center; background: #FFD700; padding: 20px; 
+    border: 4px solid #000; border-radius: 20px; margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.game-header h1 { 
+    font-size: 2.5em; color: #000; text-shadow: 3px 3px #fff;
+    margin-bottom: 15px; font-weight: bold;
+}
+
+.mode-btn {
+    background: #000; color: #FFD700; border: 2px solid #FFD700;
+    padding: 12px 24px; margin: 0 10px; border-radius: 25px;
+    cursor: pointer; font-size: 1.1em; font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.mode-btn:hover { background: #FFD700; color: #000; transform: scale(1.05); }
+.mode-btn.active { background: #FFD700; color: #000; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+/* Game Area */
+.game-area { display: flex; gap: 20px; margin-bottom: 30px; }
+
+#board {
+    border: 6px solid #000; border-radius: 20px;
+    background: #FFF8DC; box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    cursor: pointer; flex: 1;
+}
+
+/* UI Panel */
+.ui-panel {
+    background: #FFD700; border: 4px solid #000; border-radius: 20px;
+    padding: 25px; min-width: 300px; height: fit-content;
+}
+
+.dice-section { text-align: center; margin-bottom: 20px; }
+
+.dice {
+    width: 80px; height: 80px; margin: 0 auto 15px;
+    font-size: 3em; border-radius: 50%; background: #fff;
+    border: 4px solid #000; display: flex; align-items: center;
+    justify-content: center; cursor: pointer; transition: all 0.3s;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.dice.negative { background: #FF4444; color: #FFD700; animation: shake 0.5s; }
+.dice:hover { transform: scale(1.1) rotate(10deg); }
+
+.roll-btn, .negative-toggle {
+    background: #000; color: #FFD700; border: none;
+    padding: 15px 30px; border-radius: 25px; font-size: 1.1em;
+    font-weight: bold; cursor: pointer; width: 100%;
+    margin-bottom: 10px; transition: all 0.3s;
+}
+
+.roll-btn:hover { background: #333; transform: scale(1.02); }
+.negative-toggle {
+    background: linear-gradient(45deg, #FF4444, #CC0000) !important;
+    animation: pulse 1.5s infinite; box-shadow: 0 0 20px #FF4444;
+}
+
+.status { margin-bottom: 20px; }
+.status div { 
+    background: #fff; padding: 12px; margin-bottom: 10px;
+    border-radius: 10px; border-left: 5px solid #000;
+    font-weight: bold; text-align: center;
+}
+
+.controls { display: flex; gap: 10px; }
+.controls button {
+    flex: 1; background: #000; color: #FFD700;
+    border: 2px solid #FFD700; padding: 12px;
+    border-radius: 15px; cursor: pointer; font-weight: bold;
+}
+
+/* Modal */
+.modal {
+    display: none; position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+    z-index: 1000; align-items: center; justify-content: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #FFD700, #FFF8DC);
+    border: 6px solid #000; border-radius: 25px;
+    padding: 40px; text-align: center; max-width: 400px;
+}
+
+.modal-content h2 { font-size: 2.5em; color: #000; margin-bottom: 25px; }
+
+/* Rules & Footer */
+.rules-section, .footer {
+    background: #FFD700; border: 4px solid #000;
+    border-radius: 20px; padding: 25px; margin-bottom: 20px;
+    text-align: center;
+}
+
+.rules-content p { margin-bottom: 12px; font-size: 1.1em; line-height: 1.5; }
+
+.social-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px; margin-top: 20px;
+}
+
+.social-grid a {
+    color: #000; text-decoration: none; padding: 12px;
+    background: #fff; border-radius: 15px; border: 2px solid #000;
+    font-weight: bold; transition: all 0.3s;
+}
+
+.social-grid a:hover { background: #000; color: #FFD700; transform: translateY(-3px); }
+
+/* Animations */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 20px #FF4444; }
+    50% { box-shadow: 0 0 40px #FF4444, 0 0 60px #FF4444; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .game-area { flex-direction: column; }
+    .ui-panel { min-width: auto; }
+    .game-header h1 { font-size: 2em; }
+}
