@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vab.Ludo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="game-header">
+            <h1>🎲 Vab.Ludo</h1>
+            <div class="game-modes">
+                <button class="mode-btn active" data-mode="human">👥 Play with Friend</button>
+                <button class="mode-btn" data-mode="bot">🤖 vs Bot (Medium)</button>
+            </div>
+        </header>
+
+        <!-- Game Board -->
+        <div class="game-area">
+            <canvas id="board" width="600" height="600"></canvas>
+            
+            <!-- UI Panel -->
+            <div class="ui-panel">
+                <div class="dice-section">
+                    <div id="dice" class="dice">🎲</div>
+                    <div id="rollBtn" class="roll-btn">Roll Dice</div>
+                    <div id="negativeBtn" class="negative-toggle" style="display:none;">🚨 Negative (2)</div>
+                </div>
+                
+                <div class="status">
+                    <div id="turn">Player 1's Turn</div>
+                    <div id="tokens-status"></div>
+                    <div id="move-history"></div>
+                </div>
+                
+                <div class="controls">
+                    <button id="undoBtn">↶ Undo</button>
+                    <button id="resetBtn">🔄 Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Win Modal -->
+        <div id="winModal" class="modal">
+            <div class="modal-content">
+                <h2 id="winText">Player 1 Wins!</h2>
+                <button id="newGameBtn">New Game</button>
+            </div>
+        </div>
+
+        <!-- Rules -->
+        <section class="rules-section">
+            <h3>🎮 How to Play Vab.Ludo</h3>
+            <div class="rules-content">
+                <p><strong>🚨 NEW: Negative Mode</strong> - Unlocks after first path move! 20% chance of -1/-2/-3. Backward capture sends opponents home!</p>
+                <p>1️⃣ Roll 6 to exit yard • 2️⃣ Move clockwise • 3️⃣ Land on opponent = capture! • 4️⃣ First 4 tokens home = WIN</p>
+                <p><em>I was frustrated with regular Ludo... now strategic backward moves make every roll count!</em></p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>~by <strong>Vab-Gamer</strong></p>
+            <div class="social-grid">
+                <a href="https://www.instagram.com/purple_store_07" target="_blank">📸 purple_store_07</a>
+                <a href="https://www.instagram.com/ritikesh_1010" target="_blank">📸 ritikesh_1010</a>
+                <a href="https://www.linkedin.com/in/ritikeshsingh/" target="_blank">💼 LinkedIn</a>
+                <a href="mailto:vabgamer@example.com">✉️ Contact</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
