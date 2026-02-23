@@ -1,40 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vab.Ludo</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vab.Ludo</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="game-header">
-            <h1>🎲 Vab.Ludo</h1>
-            <div class="game-modes">
-                <button class="mode-btn active" data-mode="human">👥 Play with Friend</button>
-                <button class="mode-btn" data-mode="bot">🤖 vs Bot (Medium)</button>
-            </div>
-        </header>
 
-        <!-- Game Board -->
-        <div class="game-area">
-            <canvas id="board" width="600" height="600"></canvas>
-            
-            <!-- UI Panel -->
-            <div class="ui-panel">
-                <div class="dice-section">
-                    <div id="dice" class="dice">🎲</div>
-                    <div id="rollBtn" class="roll-btn">Roll Dice</div>
-                    <div id="negativeBtn" class="negative-toggle" style="display:none;">🚨 Negative (2)</div>
-                </div>
-                
-                <div class="status">
-                    <div id="turn">Player 1's Turn</div>
-                    <div id="tokens-status"></div>
-                    <div id="move-history"></div>
-                </div>
-                
+<div class="container">
+
+<header class="game-header">
+<h1>🎲 Vab.Ludo</h1>
+<div class="game-modes">
+<button class="mode-btn active" data-mode="human">👥 Play with Friend</button>
+<button class="mode-btn" data-mode="bot">🤖 vs Bot</button>
+</div>
+</header>
+
+<div class="game-area">
+
+<canvas id="board" width="600" height="600"></canvas>
+
+<div class="ui-panel">
+
+<div class="dice-section">
+<div id="dice" class="dice">🎲</div>
+<div id="rollBtn" class="roll-btn">Roll Dice</div>
+<div id="negativeBtn" class="negative-toggle" style="display:none;">🚨 Negative</div>
+</div>
+
+<div class="status">
+<div id="turn"></div>
+<div id="tokens-status"></div>
+<div id="move-history"></div>
+</div>
+
+<div class="controls">
+<button id="undoBtn">↶ Undo</button>
+<button id="resetBtn">🔄 Reset</button>
+</div>
+
+</div>
+</div>
+
+<div id="winModal" class="modal">
+<div class="modal-content">
+<h2 id="winText"></h2>
+<button id="newGameBtn">New Game</button>
+</div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>                
                 <div class="controls">
                     <button id="undoBtn">↶ Undo</button>
                     <button id="resetBtn">🔄 Reset</button>
