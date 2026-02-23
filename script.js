@@ -1,40 +1,272 @@
 class VabLudo {
-    constructor() {
-        this.canvas = document.getElementById('board');
-        this.ctx = this.canvas.getContext('2d');
-        this.currentPlayer = 0;
-        this.diceValue = 0;
-        this.gameMode = 'human';
-        this.tokens = [
-            [{pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}], // Red
-            [{pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}], // Blue
-            [{pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}], // Green
-            [{pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}, {pos: -1, negativeCharges: 0, isEligible: false}]  // Yellow
-        ];
-        this.selectedToken = null;
-        this.moveHistory = [];
-        this.safePositions = [1, 9, 14, 22, 27, 35, 40, 48];
-        this.init();
-    }
 
-    init() {
-        this.canvas.addEventListener('click', (e) => this.handleClick(e));
-        document.getElementById('rollBtn').addEventListener('click', () => this.rollDice());
-        document.getElementById('negativeBtn').addEventListener('click', () => this.activateNegative());
-        document.getElementById('resetBtn').addEventListener('click', () => this.resetGame());
-        document.getElementById('undoBtn').addEventListener('click', () => this.undo());
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => this.setMode(e.target.dataset.mode));
-        });
-        this.updateDisplay();
-        this.drawBoard();
-    }
+constructor() {
 
-    setMode(mode) {
-        this.gameMode = mode;
-        document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-        this.resetGame();
+this.canvas = document.getElementById('board');
+this.ctx = this.canvas.getContext('2d');
+
+this.players = 4;
+this.currentPlayer = 0;
+this.diceValue = 0;
+this.gameMode = 'human';
+
+this.safePositions = [0, 8, 13, 21, 26, 34, 39, 47];
+
+this.pathLength = 52;
+
+this.tokens = [];
+this.history = [];
+
+this.initTokens();
+this.initEvents();
+this.updateUI();
+this.drawBoard();
+}
+
+initTokens() {
+this.tokens = [];
+for (let p = 0; p < 4; p++) {
+let playerTokens = [];
+for (let t = 0; t < 4; t++) {
+playerTokens.push({
+pos: -1,
+negativeCharges: 2,
+eligible: false
+});
+}
+this.tokens.push(playerTokens);
+}
+}
+
+initEvents() {
+
+document.getElementById('rollBtn').onclick = () => this.rollDice();
+document.getElementById('negativeBtn').onclick = () => this.rollDice(true);
+document.getElementById('resetBtn').onclick = () => this.reset();
+document.getElementById('undoBtn').onclick = () => this.undo();
+document.getElementById('newGameBtn').onclick = () => this.reset();
+
+document.querySelectorAll('.mode-btn').forEach(btn => {
+btn.onclick = (e) => {
+document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+e.target.classList.add('active');
+this.gameMode = e.target.dataset.mode;
+this.reset();
+};
+});
+
+this.canvas.onclick = () => this.autoMove();
+}
+
+rollDice(forceNegative = false) {
+
+if (this.diceValue !== 0) return;
+
+if (forceNegative) {
+this.diceValue = -(Math.floor(Math.random() * 3) + 1);
+} else {
+
+let negativeAvailable = this.tokens[this.currentPlayer]
+.some(t => t.pos > 0 && t.eligible && t.negativeCharges > 0);
+
+if (negativeAvailable && Math.random() < 0.2) {
+this.diceValue = -(Math.floor(Math.random() * 3) + 1);
+} else {
+this.diceValue = Math.floor(Math.random() * 6) + 1;
+}
+}
+
+document.getElementById('dice').textContent =
+this.diceValue > 0 ? this.diceValue : `-${Math.abs(this.diceValue)}`;
+
+this.updateUI();
+}
+
+autoMove() {
+
+if (this.diceValue === 0) return;
+
+let playerTokens = this.tokens[this.currentPlayer];
+
+for (let token of playerTokens) {
+
+if (this.canMove(token)) {
+
+this.saveState();
+this.moveToken(token);
+this.afterMove();
+return;
+}
+}
+
+this.diceValue = 0;
+this.nextTurn();
+}
+
+canMove(token) {
+
+if (token.pos === -1 && this.diceValue === 6) return true;
+
+if (token.pos >= 0) {
+let newPos = token.pos + this.diceValue;
+if (newPos < 0) return false;
+return true;
+}
+
+return false;
+}
+
+moveToken(token) {
+
+if (token.pos === -1 && this.diceValue === 6) {
+token.pos = this.currentPlayer * 13;
+}
+else {
+token.pos += this.diceValue;
+if (token.pos < 0) token.pos = 0;
+if (token.pos >= this.pathLength) token.pos = this.pathLength;
+}
+
+if (token.pos > 0) token.eligible = true;
+
+this.handleCapture(token);
+}
+
+handleCapture(movedToken) {
+
+if (this.safePositions.includes(movedToken.pos)) return;
+
+for (let p = 0; p < 4; p++) {
+
+if (p === this.currentPlayer) continue;
+
+for (let token of this.tokens[p]) {
+
+if (token.pos === movedToken.pos) {
+token.pos = -1;
+token.eligible = false;
+token.negativeCharges = 2;
+}
+}
+}
+}
+
+afterMove() {
+
+if (this.checkWin()) return;
+
+if (this.diceValue !== 6) {
+this.nextTurn();
+}
+
+this.diceValue = 0;
+this.updateUI();
+
+if (this.gameMode === 'bot' && this.currentPlayer !== 0) {
+setTimeout(() => this.botMove(), 800);
+}
+}
+
+botMove() {
+this.rollDice();
+setTimeout(() => this.autoMove(), 500);
+}
+
+nextTurn() {
+this.currentPlayer = (this.currentPlayer + 1) % 4;
+}
+
+checkWin() {
+
+let win = this.tokens[this.currentPlayer]
+.every(t => t.pos >= this.pathLength);
+
+if (win) {
+document.getElementById('winText').textContent =
+`Player ${this.currentPlayer + 1} Wins! 🎉`;
+document.getElementById('winModal').style.display = 'flex';
+return true;
+}
+
+return false;
+}
+
+saveState() {
+this.history.push(JSON.stringify(this.tokens));
+}
+
+undo() {
+if (this.history.length > 0) {
+this.tokens = JSON.parse(this.history.pop());
+this.updateUI();
+}
+}
+
+reset() {
+this.initTokens();
+this.currentPlayer = 0;
+this.diceValue = 0;
+this.history = [];
+document.getElementById('winModal').style.display = 'none';
+this.updateUI();
+}
+
+updateUI() {
+
+document.getElementById('turn').textContent =
+`Player ${this.currentPlayer + 1}'s Turn`;
+
+let info = '';
+this.tokens[this.currentPlayer].forEach((t, i) => {
+info += `Token ${i+1}: ${t.pos}<br>`;
+});
+
+document.getElementById('tokens-status').innerHTML = info;
+}
+
+drawBoard() {
+
+this.ctx.fillStyle = "#FFF8DC";
+this.ctx.fillRect(0,0,600,600);
+
+this.ctx.strokeStyle = "#000";
+this.ctx.lineWidth = 4;
+this.ctx.strokeRect(50,50,500,500);
+
+this.drawTokens();
+requestAnimationFrame(() => this.drawBoard());
+}
+
+drawTokens() {
+
+const colors = ["#FF4444","#4169E1","#32CD32","#FFD700"];
+
+this.tokens.forEach((playerTokens,p) => {
+
+playerTokens.forEach(token => {
+
+let x,y;
+
+if (token.pos === -1) {
+x = 80 + p*120;
+y = 80;
+}
+else {
+x = 70 + (token.pos % 13)*35;
+y = 200 + Math.floor(token.pos/13)*35;
+}
+
+this.ctx.fillStyle = colors[p];
+this.ctx.beginPath();
+this.ctx.arc(x,y,15,0,Math.PI*2);
+this.ctx.fill();
+this.ctx.stroke();
+});
+});
+}
+}
+
+new VabLudo();        this.resetGame();
     }
 
     rollDice() {
